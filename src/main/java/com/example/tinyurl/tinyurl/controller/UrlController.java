@@ -7,6 +7,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("/api/v1")
 public class UrlController {
@@ -23,5 +25,10 @@ public class UrlController {
     public ResponseEntity<?> redirectToOriginalUrl(@PathVariable String shortUrl) {
         Url url = urlService.getOriginalUrl(shortUrl);
         return new ResponseEntity<>(url, HttpStatus.OK);
+    }
+
+    @GetMapping("/urls")
+    public List<Url> getAllUrls() {
+        return urlService.getAllUrls();
     }
 } 

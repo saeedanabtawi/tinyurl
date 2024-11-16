@@ -7,6 +7,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.util.Base64;
+import java.util.List;
 
 @Service
 public class UrlService {
@@ -26,5 +27,9 @@ public class UrlService {
 
     public Url getOriginalUrl(String shortUrl) {
         return urlRepository.findByShortUrl(shortUrl);
+    }
+
+    public List<Url> getAllUrls() {
+        return urlRepository.findAll();
     }
 } 

@@ -16,9 +16,52 @@
             </div>
         </div>
         <div class="mt-4" id="result"></div>
+
+        <!-- Added URL History Table -->
+        <div class="mt-5">
+            <h2>URL History</h2>
+            <table class="table table-striped table-hover">
+                <thead>
+                    <tr>
+                        <th>Original URL</th>
+                        <th>Short URL</th>
+                        <th>Created Date</th>
+                    </tr>
+                </thead>
+                <tbody id="urlTableBody">
+                </tbody>
+            </table>
+        </div>
     </div>
 
     <script>
+        // Load URLs when page loads
+        document.addEventListener('DOMContentLoaded', loadUrls);
+
+        function loadUrls() {
+            fetch('/api/v1/urls')
+                .then(response => response.json())
+                .then(urls => {
+                    const tableBody = document.getElementById('urlTableBody');
+                    tableBody.innerHTML = '';
+                    urls.forEach(url => {
+                        const row = `
+                            <tr>
+                                <td>${url.originalUrl}</td>
+                                <td>
+                                    <a href="/api/v1/${url.shortUrl}">
+                                        ${window.location.origin}/api/v1/${url.shortUrl}
+                                    </a>
+                                </td>
+                                <td>${new Date(url.createdAt).toLocaleString()}</td>
+                            </tr>
+                        `;
+                        tableBody.innerHTML += row;
+                    });
+                })
+                .catch(error => console.error('Error loading URLs:', error));
+        }
+
         function shortenUrl() {
             const originalUrl = document.getElementById('originalUrl').value;
             fetch('/api/v1/generate', {
@@ -31,6 +74,8 @@
                     <div class="alert alert-success">
                         Short URL: <a href="/api/v1/${data.shortUrl}">${window.location.origin}/api/v1/${data.shortUrl}</a>
                     </div>`;
+                // Reload the URL table after creating new short URL
+                loadUrls();
             });
         }
     </script>
