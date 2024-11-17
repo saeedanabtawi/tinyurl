@@ -24,7 +24,12 @@ public class UrlController {
     @GetMapping("/{shortUrl}")
     public ResponseEntity<?> redirectToOriginalUrl(@PathVariable String shortUrl) {
         Url url = urlService.getOriginalUrl(shortUrl);
-        return new ResponseEntity<>(url, HttpStatus.OK);
+        if (url == null) {
+            return new ResponseEntity<>("URL not found", HttpStatus.NOT_FOUND);
+        }
+        return ResponseEntity.status(HttpStatus.FOUND)
+                .header("Location", url.getOriginalUrl())
+                .build();
     }
 
     @GetMapping("/urls")
