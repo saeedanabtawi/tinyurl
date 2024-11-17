@@ -26,6 +26,7 @@
                         <th>Original URL</th>
                         <th>Short URL</th>
                         <th>Created Date</th>
+                        <th>Status</th>
                         <th>Actions</th>
                     </tr>
                 </thead>
@@ -46,6 +47,7 @@
                     const tableBody = document.getElementById('urlTableBody');
                     tableBody.innerHTML = '';
                     urls.forEach(url => {
+                        const statusClass = url.status === 'active' ? 'text-success' : 'text-danger';
                         const row = `
                             <tr>
                                 <td>${url.originalUrl}</td>
@@ -55,6 +57,7 @@
                                     </a>
                                 </td>
                                 <td>${new Date(url.createdAt).toLocaleString()}</td>
+                                <td><span class="${statusClass}">${url.status}</span></td>
                                 <td>
                                     <button onclick="deleteUrl('${url.shortUrl}')" class="btn btn-danger btn-sm">Delete</button>
                                 </td>

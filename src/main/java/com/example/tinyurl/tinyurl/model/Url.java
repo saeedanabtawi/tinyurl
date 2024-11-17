@@ -16,4 +16,5 @@ public class Url {
     private String originalUrl;
     private String shortUrl;
     private String createdAt;
+    private String status;
 } 
