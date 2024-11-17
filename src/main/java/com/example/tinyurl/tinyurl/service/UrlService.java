@@ -35,8 +35,32 @@ public class UrlService {
         return urlRepository.save(url);
     }
 
-    public Url getOriginalUrl(String shortUrl) {
-        return urlRepository.findByShortUrl(shortUrl);
+    public Url getOriginalUrl(String shortUrl, String userAgent, String ipAddress) {
+        Url url = urlRepository.findByShortUrl(shortUrl);
+        if (url != null) {
+            url.setClicks(url.getClicks() + 1);
+            url.setLastAccessBrowser(parseUserAgent(userAgent));
+            url.setLastAccessDevice(parseDevice(userAgent));
+            url.setLastAccessIp(ipAddress);
+            urlRepository.save(url);
+        }
+        return url;
+    }
+
+    private String parseUserAgent(String userAgent) {
+        if (userAgent == null) return "Unknown";
+        if (userAgent.contains("Firefox")) return "Firefox";
+        if (userAgent.contains("Chrome")) return "Chrome";
+        if (userAgent.contains("Safari")) return "Safari";
+        if (userAgent.contains("Edge")) return "Edge";
+        return "Other";
+    }
+
+    private String parseDevice(String userAgent) {
+        if (userAgent == null) return "Unknown";
+        if (userAgent.contains("Mobile")) return "Mobile";
+        if (userAgent.contains("Tablet")) return "Tablet";
+        return "Desktop";
     }
 
     public List<Url> getAllUrls() {
@@ -96,5 +120,18 @@ public class UrlService {
         log.info("Starting scheduled URL status check");
         updateAllUrlStatuses();
         log.info("Completed scheduled URL status check");
+    }
+
+    public long getTotalClicks() {
+        return urlRepository.findAll().stream()
+                .mapToLong(Url::getClicks)
+                .sum();
+    }
+
+    public List<Url> getTopUrls(int limit) {
+        return urlRepository.findAll().stream()
+                .sorted((a, b) -> b.getClicks().compareTo(a.getClicks()))
+                .limit(limit)
+                .collect(Collectors.toList());
     }
 } 

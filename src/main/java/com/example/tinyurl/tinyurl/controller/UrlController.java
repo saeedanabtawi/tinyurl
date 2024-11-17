@@ -8,6 +8,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import jakarta.servlet.http.HttpServletRequest;
 
 @RestController
 @RequestMapping("/api/v1")
@@ -22,8 +23,14 @@ public class UrlController {
     }
 
     @GetMapping("/{shortUrl}")
-    public ResponseEntity<?> redirectToOriginalUrl(@PathVariable String shortUrl) {
-        Url url = urlService.getOriginalUrl(shortUrl);
+    public ResponseEntity<?> redirectToOriginalUrl(
+            @PathVariable String shortUrl,
+            @RequestHeader(value = "User-Agent", required = false) String userAgent,
+            HttpServletRequest request) {
+        
+        String ipAddress = request.getRemoteAddr();
+        Url url = urlService.getOriginalUrl(shortUrl, userAgent, ipAddress);
+        
         if (url == null) {
             return new ResponseEntity<>("URL not found", HttpStatus.NOT_FOUND);
         }
