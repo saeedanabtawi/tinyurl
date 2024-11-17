@@ -63,6 +63,15 @@ public class UrlService {
         return "Desktop";
     }
 
+    public Url getOriginalUrl(String shortUrl) {
+        Url url = urlRepository.findByShortUrl(shortUrl);
+        if (url != null) {
+            url.setClicks(url.getClicks() + 1);
+            urlRepository.save(url);
+        }
+        return url;
+    }
+    
     public List<Url> getAllUrls() {
         return urlRepository.findAll();
     }
@@ -120,6 +129,19 @@ public class UrlService {
         log.info("Starting scheduled URL status check");
         updateAllUrlStatuses();
         log.info("Completed scheduled URL status check");
+    }
+
+    public long getTotalClicks() {
+        return urlRepository.findAll().stream()
+                .mapToLong(Url::getClicks)
+                .sum();
+    }
+
+    public List<Url> getTopUrls(int limit) {
+        return urlRepository.findAll().stream()
+                .sorted((a, b) -> b.getClicks().compareTo(a.getClicks()))
+                .limit(limit)
+                .collect(Collectors.toList());
     }
 
     public long getTotalClicks() {
