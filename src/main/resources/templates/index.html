@@ -26,6 +26,7 @@
                         <th>Original URL</th>
                         <th>Short URL</th>
                         <th>Created Date</th>
+                        <th>Actions</th>
                     </tr>
                 </thead>
                 <tbody id="urlTableBody">
@@ -54,6 +55,9 @@
                                     </a>
                                 </td>
                                 <td>${new Date(url.createdAt).toLocaleString()}</td>
+                                <td>
+                                    <button onclick="deleteUrl('${url.shortUrl}')" class="btn btn-danger btn-sm">Delete</button>
+                                </td>
                             </tr>
                         `;
                         tableBody.innerHTML += row;
@@ -88,6 +92,25 @@
                         Error: ${error.message}
                     </div>`;
             });
+        }
+
+        // Add delete function
+        function deleteUrl(shortUrl) {
+            if (confirm('Are you sure you want to delete this URL?')) {
+                fetch(`/api/v1/${shortUrl}`, {
+                    method: 'DELETE'
+                })
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Failed to delete URL');
+                    }
+                    loadUrls(); // Reload the table after deletion
+                })
+                .catch(error => {
+                    console.error('Error deleting URL:', error);
+                    alert('Failed to delete URL');
+                });
+            }
         }
     </script>
 </body>

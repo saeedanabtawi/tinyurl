@@ -36,4 +36,14 @@ public class UrlController {
     public List<Url> getAllUrls() {
         return urlService.getAllUrls();
     }
+
+    @DeleteMapping("/{shortUrl}")
+    public ResponseEntity<?> deleteUrl(@PathVariable String shortUrl) {
+        try {
+            urlService.deleteUrl(shortUrl);
+            return new ResponseEntity<>("URL deleted successfully", HttpStatus.OK);
+        } catch (IllegalArgumentException e) {
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_FOUND);
+        }
+    }
 } 

@@ -54,4 +54,13 @@ public class UrlService {
             return false;
         }
     }
+
+    public void deleteUrl(String shortUrl) {
+        Url url = urlRepository.findByShortUrl(shortUrl);
+        if (url != null) {
+            urlRepository.delete(url);
+        } else {
+            throw new IllegalArgumentException("URL not found");
+        }
+    }
 } 
