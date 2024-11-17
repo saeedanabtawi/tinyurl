@@ -68,7 +68,12 @@
                 method: 'POST',
                 body: originalUrl
             })
-            .then(response => response.json())
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Invalid URL');
+                }
+                return response.json();
+            })
             .then(data => {
                 document.getElementById('result').innerHTML = `
                     <div class="alert alert-success">
@@ -76,6 +81,12 @@
                     </div>`;
                 // Reload the URL table after creating new short URL
                 loadUrls();
+            })
+            .catch(error => {
+                document.getElementById('result').innerHTML = `
+                    <div class="alert alert-danger">
+                        Error: ${error.message}
+                    </div>`;
             });
         }
     </script>
