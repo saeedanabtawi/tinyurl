@@ -17,4 +17,5 @@ public class Url {
     private String shortUrl;
     private String createdAt;
     private String status;
+    private Long clicks = 0L;
 } 
