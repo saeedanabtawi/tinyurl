@@ -5,8 +5,44 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.7.2/font/bootstrap-icons.css">
+    <style>
+        [data-bs-theme="dark"] {
+            --bs-body-bg: #212529;
+            --bs-body-color: #dee2e6;
+        }
+        
+        [data-bs-theme="dark"] .card {
+            background-color: #343a40;
+        }
+        
+        /* Light table style (default) */
+        .table-theme-light {
+            --bs-table-bg: #ffffff;
+            --bs-table-color: #212529;
+            --bs-table-striped-color: #212529;
+            --bs-table-striped-bg: rgba(0, 0, 0, 0.05);
+            --bs-table-hover-color: #212529;
+            --bs-table-hover-bg: rgba(0, 0, 0, 0.075);
+        }
+        
+        /* Dark table style */
+        .table-theme-dark {
+            --bs-table-bg: #343a40;
+            --bs-table-color: #dee2e6;
+            --bs-table-striped-color: #dee2e6;
+            --bs-table-striped-bg: rgba(255, 255, 255, 0.05);
+            --bs-table-hover-color: #ffffff;
+            --bs-table-hover-bg: rgba(255, 255, 255, 0.075);
+            --bs-table-border-color: #495057;
+        }
+    </style>
 </head>
 <body>
+    <div class="position-fixed top-0 end-0 p-3">
+        <button class="btn btn-outline-primary" onclick="toggleTheme()" id="themeToggle">
+            <i class="bi bi-moon-fill"></i>
+        </button>
+    </div>
     <div class="container mt-5">
         <h1>URL Shortener</h1>
         <div class="row mt-4">
@@ -51,7 +87,7 @@
                 </div>
             </div>
             <div class="table-responsive">
-                <table class="table table-striped table-hover">
+                <table class="table table-striped table-hover" id="urlTable">
                     <thead>
                         <tr>
                             <th>Original URL</th>
@@ -240,6 +276,40 @@
             document.getElementById('qrModalImage').src = `/api/v1/${shortUrl}/qr`;
             modal.show();
         }
+
+        function toggleTheme() {
+            const html = document.documentElement;
+            const themeToggle = document.getElementById('themeToggle');
+            const urlTable = document.getElementById('urlTable');
+            const currentTheme = html.getAttribute('data-bs-theme');
+            const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+            
+            html.setAttribute('data-bs-theme', newTheme);
+            localStorage.setItem('theme', newTheme);
+            
+            // Update table theme
+            urlTable.classList.remove(`table-theme-${currentTheme}`);
+            urlTable.classList.add(`table-theme-${newTheme}`);
+            
+            // Update button icon
+            themeToggle.innerHTML = `<i class="bi bi-${newTheme === 'dark' ? 'moon' : 'sun'}-fill"></i>`;
+        }
+
+        // Set initial theme based on localStorage or system preference
+        document.addEventListener('DOMContentLoaded', () => {
+            const savedTheme = localStorage.getItem('theme');
+            const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+            const theme = savedTheme || (prefersDark ? 'dark' : 'light');
+            
+            document.documentElement.setAttribute('data-bs-theme', theme);
+            
+            // Set initial table theme
+            const urlTable = document.getElementById('urlTable');
+            urlTable.classList.add(`table-theme-${theme}`);
+            
+            const themeToggle = document.getElementById('themeToggle');
+            themeToggle.innerHTML = `<i class="bi bi-${theme === 'dark' ? 'moon' : 'sun'}-fill"></i>`;
+        });
     </script>
 
     <div class="modal fade" id="qrModal" tabindex="-1">
