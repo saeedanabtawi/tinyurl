@@ -71,7 +71,7 @@ public class UrlService {
         }
         return url;
     }
-    
+
     public List<Url> getAllUrls() {
         return urlRepository.findAll();
     }
@@ -144,16 +144,4 @@ public class UrlService {
                 .collect(Collectors.toList());
     }
 
-    public long getTotalClicks() {
-        return urlRepository.findAll().stream()
-                .mapToLong(Url::getClicks)
-                .sum();
-    }
-
-    public List<Url> getTopUrls(int limit) {
-        return urlRepository.findAll().stream()
-                .sorted((a, b) -> b.getClicks().compareTo(a.getClicks()))
-                .limit(limit)
-                .collect(Collectors.toList());
-    }
 } 
