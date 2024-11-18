@@ -3,6 +3,8 @@
 <head>
     <title>URL Shortener</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.7.2/font/bootstrap-icons.css">
 </head>
 <body>
     <div class="container mt-5">
@@ -48,24 +50,26 @@
                     </div>
                 </div>
             </div>
-            <table class="table table-striped table-hover">
-                <thead>
-                    <tr>
-                        <th>Original URL</th>
-                        <th>Short URL</th>
-                        <th>Created Date</th>
-                        <th>Status</th>
-                        <th>Clicks</th>
-                        <th>Last Browser</th>
-                        <th>Last Device</th>
-                        <th>Last IP</th>
-                        <th>Actions</th>
-                        <th>QR Code</th>
-                    </tr>
-                </thead>
-                <tbody id="urlTableBody">
-                </tbody>
-            </table>
+            <div class="table-responsive">
+                <table class="table table-striped table-hover">
+                    <thead>
+                        <tr>
+                            <th>Original URL</th>
+                            <th>Short URL</th>
+                            <th>Created</th>
+                            <th>Status</th>
+                            <th>Clicks</th>
+                            <th class="d-none d-md-table-cell">Browser</th>
+                            <th class="d-none d-md-table-cell">Device</th>
+                            <th class="d-none d-md-table-cell">IP</th>
+                            <th>Actions</th>
+                            <th>QR</th>
+                        </tr>
+                    </thead>
+                    <tbody id="urlTableBody">
+                    </tbody>
+                </table>
+            </div>
         </div>
     </div>
 
@@ -87,24 +91,32 @@
                         const statusClass = url.status === 'active' ? 'text-success' : 'text-danger';
                         const row = `
                             <tr>
-                                <td>${url.originalUrl}</td>
+                                <td><div class="text-truncate" style="max-width: 150px;">${url.originalUrl}</div></td>
                                 <td>
-                                    <a href="/api/v1/${url.shortUrl}" target="_blank">
-                                        ${window.location.origin}/api/v1/${url.shortUrl}
-                                    </a>
+                                    <div class="text-truncate" style="max-width: 150px;">
+                                        <a href="/api/v1/${url.shortUrl}" target="_blank">
+                                            ${window.location.origin}/api/v1/${url.shortUrl}
+                                        </a>
+                                    </div>
                                 </td>
-                                <td>${new Date(url.createdAt).toLocaleString()}</td>
+                                <td>${new Date(url.createdAt).toLocaleDateString()}</td>
                                 <td><span class="${statusClass}">${url.status}</span></td>
                                 <td>${url.clicks}</td>
-                                <td>${url.lastAccessBrowser || 'N/A'}</td>
-                                <td>${url.lastAccessDevice || 'N/A'}</td>
-                                <td>${url.lastAccessIp || 'N/A'}</td>
+                                <td class="d-none d-md-table-cell">${url.lastAccessBrowser || 'N/A'}</td>
+                                <td class="d-none d-md-table-cell">${url.lastAccessDevice || 'N/A'}</td>
+                                <td class="d-none d-md-table-cell">${url.lastAccessIp || 'N/A'}</td>
                                 <td>
-                                    <button onclick="deleteUrl('${url.shortUrl}')" class="btn btn-danger btn-sm me-1">Delete</button>
-                                    <button onclick="updateHourlyChart('${url.shortUrl}')" class="btn btn-primary btn-sm">View Chart</button>
+                                    <div class="btn-group">
+                                        <button onclick="deleteUrl('${url.shortUrl}')" class="btn btn-danger btn-sm">
+                                            <i class="bi bi-trash"></i>
+                                        </button>
+                                        <button onclick="updateHourlyChart('${url.shortUrl}')" class="btn btn-primary btn-sm">
+                                            <i class="bi bi-graph-up"></i>
+                                        </button>
+                                    </div>
                                 </td>
                                 <td>
-                                    <img src="/api/v1/${url.shortUrl}/qr" alt="QR Code" width="50" height="50" 
+                                    <img src="/api/v1/${url.shortUrl}/qr" alt="QR Code" width="40" height="40" 
                                          onclick="showQRModal('${url.shortUrl}')" style="cursor: pointer">
                                 </td>
                             </tr>
