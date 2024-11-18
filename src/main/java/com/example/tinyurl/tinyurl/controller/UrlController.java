@@ -10,6 +10,12 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 import java.util.Map;
 import jakarta.servlet.http.HttpServletRequest;
+import com.google.zxing.BarcodeFormat;
+import com.google.zxing.client.j2se.MatrixToImageWriter;
+import com.google.zxing.common.BitMatrix;
+import com.google.zxing.qrcode.QRCodeWriter;
+import org.springframework.http.MediaType;
+import java.io.ByteArrayOutputStream;
 
 @RestController
 @RequestMapping("/api/v1")
@@ -61,5 +67,20 @@ public class UrlController {
             @RequestParam(defaultValue = "24") int hours) {
         Map<String, Long> stats = urlService.getClicksByHour(shortUrl, hours);
         return ResponseEntity.ok(stats);
+    }
+
+    @GetMapping(value = "/{shortUrl}/qr", produces = MediaType.IMAGE_PNG_VALUE)
+    public byte[] generateQRCode(@PathVariable String shortUrl) {
+        try {
+            String shortUrlWithDomain = "http://localhost:8080/api/v1/" + shortUrl;
+            QRCodeWriter qrCodeWriter = new QRCodeWriter();
+            BitMatrix bitMatrix = qrCodeWriter.encode(shortUrlWithDomain, BarcodeFormat.QR_CODE, 200, 200);
+            
+            ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+            MatrixToImageWriter.writeToStream(bitMatrix, "PNG", outputStream);
+            return outputStream.toByteArray();
+        } catch (Exception e) {
+            throw new RuntimeException("Error generating QR code", e);
+        }
     }
 } 
