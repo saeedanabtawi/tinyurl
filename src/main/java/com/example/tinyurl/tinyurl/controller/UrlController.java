@@ -8,6 +8,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 import jakarta.servlet.http.HttpServletRequest;
 
 @RestController
@@ -52,5 +53,13 @@ public class UrlController {
         } catch (IllegalArgumentException e) {
             return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_FOUND);
         }
+    }
+
+    @GetMapping("/stats/{shortUrl}/hourly")
+    public ResponseEntity<?> getHourlyStats(
+            @PathVariable String shortUrl,
+            @RequestParam(defaultValue = "24") int hours) {
+        Map<String, Long> stats = urlService.getClicksByHour(shortUrl, hours);
+        return ResponseEntity.ok(stats);
     }
 } 

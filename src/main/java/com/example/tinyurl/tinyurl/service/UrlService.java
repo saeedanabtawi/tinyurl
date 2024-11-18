@@ -13,6 +13,9 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Random;
 import java.util.stream.Collectors;
+import java.util.Map;
+import java.util.HashMap;
+import java.time.format.DateTimeFormatter;
 
 @Service
 @Slf4j
@@ -39,6 +42,7 @@ public class UrlService {
         Url url = urlRepository.findByShortUrl(shortUrl);
         if (url != null) {
             url.setClicks(url.getClicks() + 1);
+            url.getClickTimestamps().add(LocalDateTime.now().toString());
             url.setLastAccessBrowser(parseUserAgent(userAgent));
             url.setLastAccessDevice(parseDevice(userAgent));
             url.setLastAccessIp(ipAddress);
@@ -142,6 +146,21 @@ public class UrlService {
                 .sorted((a, b) -> b.getClicks().compareTo(a.getClicks()))
                 .limit(limit)
                 .collect(Collectors.toList());
+    }
+
+    public Map<String, Long> getClicksByHour(String shortUrl, int hours) {
+        Url url = urlRepository.findByShortUrl(shortUrl);
+        if (url == null) return new HashMap<>();
+
+        LocalDateTime cutoff = LocalDateTime.now().minusHours(hours);
+        
+        return url.getClickTimestamps().stream()
+            .map(timestamp -> LocalDateTime.parse(timestamp))
+            .filter(timestamp -> timestamp.isAfter(cutoff))
+            .collect(Collectors.groupingBy(
+                timestamp -> timestamp.format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:00")),
+                Collectors.counting()
+            ));
     }
 
 } 
